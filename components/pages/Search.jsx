@@ -1,16 +1,17 @@
 import Card from '../ui/Card';
 import {
-  IonPage,
-  IonHeader,
-  IonToolbar,
-  IonTitle,  
-  IonContent,  
+    IonPage,
+    IonHeader,
+    IonToolbar,
+    IonTitle,  
+    IonContent,  
 } from '@ionic/react';
 import { getHomeItems } from '../../store/selectors';
 import Store from '../../store';
 import Navbar from '../ui/Navbar';
+import { IonSearchbar } from '@ionic/react';
 
-const FeedCard = ({ title, type, text, author, authorAvatar, image }) => (
+const SearchCard = ({ title, type, text, author, authorAvatar, image }) => (
    <>
    <p className='max-w-xl mx-auto font-bold'>팀 아토리</p>
   <Card className="mb-4 mx-auto">
@@ -32,7 +33,7 @@ const FeedCard = ({ title, type, text, author, authorAvatar, image }) => (
    </> 
 );
 
-const Feed = () => {
+const Search = () => {
   const homeItems = Store.useState(getHomeItems);    
 
   return (
@@ -41,12 +42,14 @@ const Feed = () => {
       <IonContent className="ion-padding" fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Feed</IonTitle>
+            <IonTitle size="large">Search</IonTitle>
           </IonToolbar>
         </IonHeader>
+
+        <IonSearchbar placeholder="Custom Placeholder"></IonSearchbar>
         
         {homeItems.map((i, index) => (
-          <FeedCard {...i} key={index} />
+          <SearchCard {...i} key={index} />
         ))}
 
       </IonContent>
@@ -54,4 +57,4 @@ const Feed = () => {
   );
 };
 
-export default Feed;
+export default Search;

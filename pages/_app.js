@@ -22,6 +22,12 @@ import '@ionic/react/css/display.css';
 import '../styles/global.css';
 import '../styles/variables.css';
 
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
+import '../styles/slides.css';
+
 function MyApp({ Component, pageProps }) {
   return (
     <>

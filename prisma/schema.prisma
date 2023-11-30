@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+
+model Test{
+  idx           Int       @id @default(autoincrement())
+  name          String
+  content         String?  
+}
+
+
+//event
+//board
+//comment
+//caresheet
+//market
+//member
+//notice
+//qna
+
+
+
+// 샵 테이블
+model Shops{
+  idx           Int       @id @default(autoincrement())
+  name          String
+  ename         String?   
+  type          String?   //샵, 병원 등
+  salesType     String?   //취급품목 : 생물, 먹이 등등
+  address       String?  
+  detailAddress String?
+  district      String?   //구군
+  region        String?   //경기도, 서울시, 
+  xpoint        String?
+  ypoint        String?
+  shopTel       String?
+  shopPhone     String?  
+  description   String?  @db.Text //매장 소개글
+  workingHours  String?  //매장 운영시간
+  url           String?
+  viewCnt       Int?      @default(0) 
+  fileName1     String?
+  fileName2     String?
+  fileName3     String?
+  fileName4     String?
+  fileName5     String?  
+  useYn         String?
+  od            Int?      @default(0)  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
+  regIp         String?
+}
+
+model Logs {
+  id         Int      @id @default(autoincrement()) 
+  timestamp  DateTime @default(now())              // 로그 기록 시간
+  userId     Int?                                  // 사용자 ID
+  eventType  String                                // 이벤트 유형 (예: 'page_view', 'click', 'login')
+  url        String?                               // 사용자가 방문한 URL
+  referrer   String?                               // 이전 페이지 URL (리퍼러) (선택적)
+  ipAddress  String                                // 사용자의 IP 주소
+  userAgent  String?                               // 사용자 에이전트 정보 (브라우저, 기기 등) (선택적)  
+  customData Json?                                 // 기타 사용자 정의 데이터 (JSON 형식) (선택적)
+  createdAt  DateTime  @default(now())
+}

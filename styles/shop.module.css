@@ -1,0 +1,10 @@
+.myIonCol {
+  height:120px;  
+  background-color: #135d54;
+  border: solid 1px #fff;
+  color: #fff;
+  text-align: center;
+  align-items: center;
+  vertical-align: middle;
+  line-height: 120px;
+}

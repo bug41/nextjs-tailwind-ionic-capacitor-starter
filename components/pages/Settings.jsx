@@ -21,7 +21,7 @@ const Settings = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Settings</IonTitle>
+          <IonTitle>설정</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent>
