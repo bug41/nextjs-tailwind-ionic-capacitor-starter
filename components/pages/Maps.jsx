@@ -1,6 +1,6 @@
 import { Map, MapMarker } from "react-kakao-maps-sdk";
 import Card from '../ui/Card';
-import { IonPage,IonHeader,IonToolbar,IonTitle,  IonContent,  IonSearchbar,IonItem,IonInput, IonList, IonLabel, IonIcon, IonButton, IonImg, IonThumbnail, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
+import { IonPage,IonHeader,IonToolbar,IonTitle,  IonContent,  IonSearchbar,IonItem,IonInput, IonList, IonLabel, IonIcon, IonButton, IonImg, IonThumbnail, IonInfiniteScroll, IonInfiniteScrollContent, IonAvatar } from '@ionic/react';
 import { getHomeItems } from '../../store/selectors';
 import Store from '../../store';
 import Navbar from '../ui/Navbar';
@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 
 import { locationOutline, callOutline, timeOutline, informationCircleOutline} from 'ionicons/icons';
-import Link from "next/link";
+import { Link } from 'react-router-dom';
 
 const MapCard = ({ title, type, text, author, authorAvatar, image }) => (
   <Card className="my-4 mx-auto">
@@ -135,7 +135,7 @@ const Maps = () => {
 
         <form>
           <IonItem>
-            <ion-label label="name">Name</ion-label>
+            <IonLabel label="name">Name</IonLabel>
             <IonInput type="text" name="name"  
               value={name}          
               onIonInput={(e) => setName(e.detail.value || '')}                                  
@@ -144,7 +144,7 @@ const Maps = () => {
             </IonInput>            
           </IonItem>          
           <IonItem>
-            <ion-label label="content">Content</ion-label>
+            <IonLabel label="content">Content</IonLabel>
             <IonInput type="text" name="content" 
               value={content}
               onIonInput={(e) => setContent(e.detail.value || '')}
@@ -169,77 +169,73 @@ const Maps = () => {
         
         <IonList>
           {shopList.map((item, index) => (
-            <div className="max-w-3xl pt-10 mx-auto" key={item.idx}>
-            <div className="p-5 flex flex-wrap items-center">
-                <div className="md:w-1/3 flex justify-center">
-                    <Link href="/map/1">
-                        <Image src="https://images.pexels.com/photos/17075271/pexels-photo-17075271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-                            alt="logo"
-                            width={120}
-                            height={120}
-                            style={{
-                                maxWidth: '100%',
-                                height: 'auto',
-                            }}
-                            />
+            <>
+              <IonItem key={item.idx} className="ion-mapList">
+                <IonThumbnail className="ion-mapList-image">
+                  <Link to={`/tabs/maps/${item.idx}`}>
+                    <Image
+                      src={"https://images.pexels.com/photos/17075271/pexels-photo-17075271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} 
+                      fill
+                      className="mr-2"
+                      alt="" 
+                    />
+                  </Link>
+                </IonThumbnail>
+                <IonLabel className="ion-padding ion-mapList-text">                  
+                  <h2 >
+                    <Link to={`/tabs/maps/${item.idx}`}>
+                      {item.name}
                     </Link>
-                </div>
-                <div className="md:w-2/3 pt-5 md:pt-0">
-                    <div className="text-2xl font-bold">
-                        <Link href={`/tabs/maps/${item.idx}`} className="">{item.name}</Link>
-                    </div>
-                    <div className="mt-5">
-                        <div className="flex mb-1 items-center">
-                            <IonIcon icon={locationOutline} />
-                            <p className="pl-2">서울 강서구 마곡동 757</p>
-                            
-                        </div>
-                        <div className="flex mb-1 items-center">
-                            <IonIcon icon={locationOutline} />
-                            <p className="pl-2">010-8814-5981</p>
-                        </div>
-                        <div className="flex mb-1 items-center">
-                            <IonIcon icon={locationOutline} />
-                            <p className="pl-2">예약방문</p>
-                        </div>
-                        <div className="flex mb-1 items-center">
-                            <IonIcon icon={locationOutline} />
-                            <p className="pl-2">평점 ★★★★☆</p>
-                            <p className="pl-2">리뷰 31</p>
-                        </div>                            
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <Image src="/img/kakao_logo.png"
-                            alt="카카오톡 공유하기"
-                            width={32}
-                            height={32}
-                            style={{
-                                maxWidth: '100%',
-                                height: 'auto',
-                            }}
-                        />
-                        <Image src="/img/naver_map.png"
-                            alt="네이버 지도 열기"
-                            width={32}
-                            height={32}
-                            style={{
-                                maxWidth: '100%',
-                                height: 'auto',
-                            }}
-                        />
-                        <Image src="/img/kakao_map.png"
-                            alt="카카오 지도 열기"
-                            width={32}
-                            height={32}
-                            style={{
-                                maxWidth: '100%',
-                                height: 'auto',
-                            }}
-                        />
-                    </div>
-                </div>
-            </div>
-        </div>			
+                  </h2>
+                  <p>
+                      <IonIcon icon={locationOutline} />
+                      <span className="pl-1">{item.address} {item.detailAddress}</span>
+                  </p>
+                  <p>
+                      <IonIcon icon={callOutline} />
+                      <span className="pl-1">{item.shopTel}</span>
+                  </p>
+                  <p>
+                      <IonIcon icon={timeOutline} />
+                      <span className="pl-1">{item.workingHours}</span>
+                  </p>                
+                  <p>                    
+                      평점 ★★★★☆
+                  </p>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <Image src="/img/kakao_logo.png"
+                        alt="카카오톡 공유하기"
+                        width={24}
+                        height={24}
+                        style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                        }}
+                    />
+                    <Image src="/img/naver_map.png"
+                        alt="네이버 지도 열기"
+                        width={24}
+                        height={24}
+                        style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                        }}
+                    />
+                    <Image src="/img/kakao_map.png"
+                        alt="카카오 지도 열기"
+                        width={24}
+                        height={24}
+                        style={{
+                            maxWidth: '100%',
+                            height: 'auto',
+                        }}
+                    />
+                </div>             
+                </IonLabel>                
+              </IonItem>			
+              
+            </>
           ))}
         </IonList>
         <IonInfiniteScroll

@@ -10,6 +10,7 @@ import Lists from './Lists';
 import ListDetail from './ListDetail';
 import Settings from './Settings';
 import Search from './Search';
+import MapsDetail from './MapsDetail';
 
 const Tabs = () => {
   return (
@@ -18,6 +19,7 @@ const Tabs = () => {
         <Route path="/tabs/home" render={() => <Home />} exact={true} />
         <Route path="/tabs/feed" render={() => <Feed />} exact={true} />
         <Route path="/tabs/maps" render={() => <Maps />} exact={true} />
+        <Route path="/tabs/maps/:listId" render={() => <MapsDetail />} exact={true} />
         <Route path="/tabs/search" render={() => <Search />} exact={true} />
         <Route path="/tabs/lists" render={() => <Lists />} exact={true} />
         <Route path="/tabs/lists/:listId" render={() => <ListDetail />} exact={true} />

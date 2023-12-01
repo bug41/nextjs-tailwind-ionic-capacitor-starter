@@ -212,3 +212,23 @@ ion-card-header.ios {
   display: flex;
   flex-flow: column-reverse;
 }
+
+.ion-mapList{
+  /*height:150px;*/
+  background:red;
+}
+
+.ion-mapList-image{
+  position:relative;
+  min-width: 6rem;
+  min-height: 7rem;
+}
+
+.ion-mapList-text h2{
+  font-size:1.15rem !important;
+  padding-bottom:2px;
+}
+
+.ion-mapList-text a{
+  color:black;
+}
