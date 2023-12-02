@@ -1,116 +1,118 @@
-import { Map, MapMarker } from "react-kakao-maps-sdk";
-import Card from '../ui/Card';
-import { IonPage,IonHeader,IonToolbar,IonTitle,  IonContent,  IonSearchbar,IonItem,IonInput, IonList, IonLabel, IonIcon, IonButton, IonImg, IonThumbnail, IonInfiniteScroll, IonInfiniteScrollContent, IonAvatar } from '@ionic/react';
-import { getHomeItems } from '../../store/selectors';
-import Store from '../../store';
-import Navbar from '../ui/Navbar';
+import Script from "next/script";
 import { useEffect, useState } from "react";
+import { Map, MapMarker } from "react-kakao-maps-sdk";
+import Navbar from '../ui/Navbar';
 import Image from "next/image";
+import styles from '../../styles/maps.module.css'
 
-import { locationOutline, callOutline, timeOutline, informationCircleOutline} from 'ionicons/icons';
+import { IonPage,IonHeader,IonToolbar,IonTitle,  IonContent,  IonSearchbar,IonItem,IonList, IonLabel, IonIcon, IonThumbnail, IonInfiniteScroll, IonInfiniteScrollContent } from '@ionic/react';
+import { locationOutline, callOutline, timeOutline} from 'ionicons/icons';
 import { Link } from 'react-router-dom';
 
-const MapCard = ({ title, type, text, author, authorAvatar, image }) => (
-  <Card className="my-4 mx-auto">
-    <div className="h-32 w-full relative">
-      <img className="rounded-t-xl object-cover min-w-full min-h-full max-w-full max-h-full" src={image} alt="" />
-    </div>
-    <div className="px-4 py-4 bg-white rounded-b-xl dark:bg-gray-900">
-      <h4 className="font-bold py-0 text-s text-gray-400 dark:text-gray-500 uppercase">{type}</h4>
-      <h2 className="font-bold text-2xl text-gray-800 dark:text-gray-100">{title}</h2>
-      <p className="sm:text-sm text-s text-gray-500 mr-1 my-3 dark:text-gray-400">{text}</p>
-      <div className="flex items-center space-x-4">
-        <div className="w-10 h-10 relative">
-          <img src={authorAvatar} className="rounded-full object-cover min-w-full min-h-full max-w-full max-h-full" alt="" />
-        </div>
-        <h3 className="text-gray-500 dark:text-gray-200 m-l-8 text-sm font-medium">{author}</h3>
-      </div>
-    </div>
-  </Card>
-);
 
-const Maps = () => {
-
-  const homeItems = Store.useState(getHomeItems);    
+const Maps = () => {          
   
-  const [shopList, setShopList] = useState([]);
+  const itemsPerPage                = 10;
+  const [page, setPage]             = useState(1);
+  const [shopList, setShopList]     = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [kakaoKey, setKakaoKey]     = useState(false);
 
-  const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
-
-  /*
-  const generateItems = () => {
-    const newShopList = [];
-    for (let i = 0; i < 50; i++) {
-      newShopList.push(`Item ${1 + shopList.length + i}`);
-    }
-    setShopList([...shopList, ...newShopList]);
-  };
-  */        
-  const generateItems = async(page, itemsPerPage) => {    
-
-    try{
-      await fetch(`/api/maps/list?page=${page}&itemsPerPage=${itemsPerPage}`, {
-          method: 'GET'          
-      }).then(res => {        
-        if (!res.ok) throw new Error('Network response was not ok');
-        return res.json();        
-      }).then(data => {        
-        //console.log(JSON.stringify(data));
-        //setShopList([...shopList, ...data])
-        //const newShopList = [];        
-        //for (let i = 0; i < 50; i++) {
-        //  newShopList.push(`Item ${1 + shopList.length + i}`);
-        //}
-        //setShopList([...shopList, ...newShopList]);
-        console.log(data);        
-        setShopList([...shopList, ...data]);
-      })
-      .catch(error => {        
-        console.error('There was a problem with the fetch operation:', error);
-      });      
-      
-  }catch(error){  
-      console.error('리스트 불러오기 실패하였습니다', error);
-  }      
-  };
+  const kakaoInit = () => {    
+    window.Kakao.init(process.env.NEXT_PUBLIC_KAKAO_APP_JS_KEY);
+    console.log(window.Kakao.isInitialized());
+  }
    
   useEffect(() => {
-    //console.log('page : ' + page)    
-    generateItems(page, itemsPerPage);    
-  }, [page]);
+    console.log('page : ' + page)
+    generateItems(page, itemsPerPage, searchText);
+  }, [page, searchTerm]);   
 
-
-  const [searchText, setSearchText] = useState('');
-  const [name, setName] = useState('');
-  const [content, setContent] = useState('');
-
-  const handleCommentSubmit = async () => {
-        
-    console.log('Submit : ' + name, content);
     
-    try{       
-        const result = await fetch('/api/test/createTest', {
-            method: 'POST',
-            body: JSON.stringify({
-                "name" : name,
-                "content" : content,                
-            })
-        });
+  const generateItems = async(page, itemsPerPage, searchText) => {    
 
-        if(result.status === 200){          
-          console.log('등록성공');          
-        }else{
-          console.log('실패');
-        }
+    console.log('generateItems 호출' + page , searchText);
+
+    try{
+        await fetch(`/api/maps/list?page=${page}&itemsPerPage=${itemsPerPage}&searchText=${searchText}`, {
+            method: 'GET'          
+        }).then(res => {        
+          if (!res.ok) throw new Error('네트워크 연결이 불안정합니다.');
+          return res.json();        
+        }).then(data => {        
+          //console.log(JSON.stringify(data));
+          //setShopList([...shopList, ...data])
+          //const newShopList = [];        
+          //for (let i = 0; i < 50; i++) {
+          //  newShopList.push(`Item ${1 + shopList.length + i}`);
+          //}
+          setShopList([...shopList, ...data]);
+          console.log(data);
+
+          if(shopList.length === 0 && data.length === 0){
+            console.log("데이터가 없음")
+          }
+
+        })
+        .catch(error => {        
+          console.error('데이터를 불러오는데 문제가 생겼습니다. ', error);
+        });      
         
     }catch(error){  
-        console.error('등록에 실패하였습니다', error);
-    }       
-};
+        console.error('리스트 불러오기를 실패하였습니다', error);
+    }      
+  };
+
+  //검색
+  const handleSearch = (e) => {            
+    const value = e.target.value;    
+    setSearchText(value);
+
+    setTimeout(() => {
+      if(value !== ''){
+        setPage(1);
+      }      
+      setSearchTerm(value);      
+      setShopList([]);
+    }, 500);
+  };
+
+  const kakaoShare = (a,b) => {
+    const urls = 'http://localhost:3000';
+
+    Kakao.Link.sendDefault({
+        objectType: 'location',
+        address: 'test',
+        addressTitle: 'test',
+        content: {
+            title: a,
+            description: '렙랩 에서 공유합니다 ~! ',
+            imageUrl: 'img',
+            link: {
+                mobileWebUrl: urls,
+                webUrl: urls
+            }
+        },
+        social: {
+            /*  likeCount: 286,
+              commentCount: 45,
+              sharedCount: 845
+              */
+        },
+        buttons: [{
+            title: '웹으로 보기',
+            link: {
+                mobileWebUrl: urls,
+                webUrl: urls
+            }
+        }]
+    });
+  }
 
   return (
     <IonPage>
+       <Script src='https://developers.kakao.com/sdk/js/kakao.js' onLoad={kakaoInit} ></Script>
       <Navbar/>
       <IonContent className="ion-padding" fullscreen>        
         <IonHeader collapse="condense">
@@ -120,42 +122,16 @@ const Maps = () => {
         </IonHeader>
 
         <IonSearchbar 
-          placeholder="Custom Placeholder" 
-          onIonInput={(e) => {
-            setSearchText(e.detail.value || '');
-            console.log('검색어 입력 : ' + e.detail.value)            
-          }}
+          placeholder="샵 검색" 
+          onIonInput={handleSearch}
           onIonClear={() => setSearchText('')} // X 버튼 클릭 시 검색어 초기화
+          value={searchText}
           //onIonCancel={() => setSearchText('')} // 취소 버튼 클릭 시 검색어 초기화
           //onIonBlur={() => setSearchText('')}   // 검색바에서 포커스가 벗어날 때 검색어 초기화          
           //showCancelButton="focus"
           //cancelButtonText="취소"                  
           >
-        </IonSearchbar>        
-
-        <form>
-          <IonItem>
-            <IonLabel label="name">Name</IonLabel>
-            <IonInput type="text" name="name"  
-              value={name}          
-              onIonInput={(e) => setName(e.detail.value || '')}                                  
-              //onIonChange={(e) => setName(e.target.value)}
-            >
-            </IonInput>            
-          </IonItem>          
-          <IonItem>
-            <IonLabel label="content">Content</IonLabel>
-            <IonInput type="text" name="content" 
-              value={content}
-              onIonInput={(e) => setContent(e.detail.value || '')}
-              //onIonChange={(e) => setContent(e.target.value)}
-              >              
-            </IonInput>
-          </IonItem>          
-          <div className="button-inline">
-            <button type="button" onClick={handleCommentSubmit}>Submit</button>
-          </div>
-        </form>        
+        </IonSearchbar>
 
         <Map
             center={{ lat: 33.5563, lng: 126.79581 }}
@@ -168,10 +144,12 @@ const Maps = () => {
         
         
         <IonList>
-          {shopList.map((item, index) => (
-            <>
-              <IonItem key={item.idx} className="ion-mapList">
-                <IonThumbnail className="ion-mapList-image">
+          {
+          shopList.length > 0 ? (
+          shopList.map((item, index) => (
+              <IonItem key={item.idx} className={`${styles.ionMapList} ion-no-padding`}>
+                <IonThumbnail 
+                  className={`${styles.ionMapListImage}`}>
                   <Link to={`/tabs/maps/${item.idx}`}>
                     <Image
                       src={"https://images.pexels.com/photos/17075271/pexels-photo-17075271.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"} 
@@ -181,10 +159,10 @@ const Maps = () => {
                     />
                   </Link>
                 </IonThumbnail>
-                <IonLabel className="ion-padding ion-mapList-text">                  
-                  <h2 >
+                <IonLabel className={`${styles.ionMapListText} ion-padding`}>             
+                  <h2>
                     <Link to={`/tabs/maps/${item.idx}`}>
-                      {item.name}
+                      {item.name} {item.idx}
                     </Link>
                   </h2>
                   <p>
@@ -203,8 +181,9 @@ const Maps = () => {
                       평점 ★★★★☆
                   </p>
 
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex gap-2 mt-2 justify-end">
                     <Image src="/img/kakao_logo.png"
+                        //id="kakaotalk-sharing-btn"
                         alt="카카오톡 공유하기"
                         width={24}
                         height={24}
@@ -212,6 +191,7 @@ const Maps = () => {
                             maxWidth: '100%',
                             height: 'auto',
                         }}
+                        onClick={() => kakaoShare(`${item.idx}`, `${item.name}`)}
                     />
                     <Image src="/img/naver_map.png"
                         alt="네이버 지도 열기"
@@ -221,6 +201,7 @@ const Maps = () => {
                             maxWidth: '100%',
                             height: 'auto',
                         }}
+                        onClick={() => kakaoShare(`${item.idx}`, `${item.name}`)}
                     />
                     <Image src="/img/kakao_map.png"
                         alt="카카오 지도 열기"
@@ -233,10 +214,12 @@ const Maps = () => {
                     />
                 </div>             
                 </IonLabel>                
-              </IonItem>			
-              
-            </>
-          ))}
+              </IonItem>
+          ))) : (
+              <div className="flex items-center mx-auto justify-center py-8 text-xl text-slate-500 font-bold">
+                조건에 맞는 데이터가 없습니다.
+              </div>
+          )}
         </IonList>
         <IonInfiniteScroll
           onIonInfinite={(ev) => {

@@ -1,0 +1,19 @@
+.ionMapList{
+  /*height:150px;*/
+  padding:0;
+}
+
+.ionMapListImage{
+  position:relative;
+  min-width: 6.5rem;
+  min-height: 7rem;
+}
+
+.ionMapListText h2{
+  font-size:1.15rem !important;
+  padding-bottom:5px;
+}
+
+.ionMapListText a{
+  color:black;
+}

@@ -7,7 +7,7 @@ import { db } from "/lib/db";
 
     if(req.method == 'GET'){        
 
-        const { page, itemsPerPage } = req.query;        
+        const { page, itemsPerPage , searchText} = req.query;        
         const skip = (page - 1) * itemsPerPage;
 
         /*
@@ -18,24 +18,44 @@ import { db } from "/lib/db";
             })
 
             findMany()
-        */        
+        */
 
-        const result = await db.shops.findMany({
-            skip : parseInt(skip),
-            take: parseInt(itemsPerPage)  ,
-            where: {
-                useYn: {
-                    contains: 'Y',
+        const whereConditions = {
+            useYn: {
+                equals: 'Y',
+            },
+            type: {
+                equals: 'S',
+            },
+        };
+            
+        if (searchText) {
+            whereConditions.OR = [
+            {
+                name: {
+                contains: searchText,
                 },
-                type: {
-                    contains: 'S',
+            },
+            {
+                ename: {
+                contains: searchText,
                 },
-              },
-        });        
-        res.status(200).json(result)
+            },                
+            ];
+        }
+
+        try {
+            const result = await db.shops.findMany({
+                skip : parseInt(skip),
+                take: parseInt(itemsPerPage)  ,
+                where: whereConditions
+            });
+            res.status(200).json(result)    
+        } catch (error) {
+            res.status(400).json(error)
+        }        
 
     }else{
-
         console.log(res.status(400).json('잘못된 요청입니다.'))
     }
 }   
