@@ -9,8 +9,14 @@ import { IonPage,IonHeader,IonToolbar,IonTitle,  IonContent,  IonSearchbar,IonIt
 import { locationOutline, callOutline, timeOutline} from 'ionicons/icons';
 import { Link } from 'react-router-dom';
 
+import { Browser } from '@capacitor/browser';
 
-const Maps = () => {          
+const openCapacitorSite = async (name) => {  
+  await Browser.open({ url: 'https://map.naver.com/p/search/' + name });
+};
+
+
+const Maps = () => {
   
   const itemsPerPage                = 10;
   const [page, setPage]             = useState(1);
@@ -30,10 +36,8 @@ const Maps = () => {
   }, [page, searchTerm]);   
 
     
-  const generateItems = async(page, itemsPerPage, searchText) => {    
-
+  const generateItems = async(page, itemsPerPage, searchText) => {
     console.log('generateItems 호출' + page , searchText);
-
     try{
         await fetch(`/api/maps/list?page=${page}&itemsPerPage=${itemsPerPage}&searchText=${searchText}`, {
             method: 'GET'          
@@ -49,11 +53,9 @@ const Maps = () => {
           //}
           setShopList([...shopList, ...data]);
           console.log(data);
-
           if(shopList.length === 0 && data.length === 0){
             console.log("데이터가 없음")
           }
-
         })
         .catch(error => {        
           console.error('데이터를 불러오는데 문제가 생겼습니다. ', error);
@@ -79,7 +81,10 @@ const Maps = () => {
   };
 
   const kakaoShare = (a,b) => {
-    const urls = 'http://localhost:3000';
+    //const urls = 'http://localhost:3000';
+    const urls = 'http://192.168.56.1:3000';    
+
+    console.log('kakaoShare click : ' + urls)
 
     Kakao.Link.sendDefault({
         objectType: 'location',
@@ -109,6 +114,37 @@ const Maps = () => {
         }]
     });
   }
+
+  // 주소 클릭시 클립보드로 복사
+  const clickedCopyToClipBoard = (addr1, addr2, name) => {
+    const content = addr1 + ' ' + addr2;
+    if(name === ""){
+      alert('주소 복사 도중 오류가 발생하였습니다.');
+      return false;
+    }
+
+    if (window.isSecureContext && navigator.clipboard) {      
+      navigator.clipboard.writeText(content);
+    } else {      
+      unsecuredCopyToClipboard(content);
+    }
+    alert(name +' 주소 복사 완료');    
+    
+  } 
+
+  const unsecuredCopyToClipboard = (text) => {
+    const textArea = document.createElement("textarea");
+    textArea.value=text;
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try{
+      document.execCommand('copy')
+    }catch(err){
+      console.error('주소 복사하기 에러',err)
+    }
+    document.body.removeChild(textArea)
+  };
 
   return (
     <IonPage>
@@ -167,11 +203,11 @@ const Maps = () => {
                   </h2>
                   <p>
                       <IonIcon icon={locationOutline} />
-                      <span className="pl-1">{item.address} {item.detailAddress}</span>
+                      <span className="pl-1" onClick={() => clickedCopyToClipBoard(`${item.address}`, `${item.detailAddress}`,`${item.name}`)}>{item.address} {item.detailAddress}</span>
                   </p>
                   <p>
                       <IonIcon icon={callOutline} />
-                      <span className="pl-1">{item.shopTel}</span>
+                      <span className="pl-1"><a href={`tel:${item.shopTel}`}>{item.shopTel}</a></span>
                   </p>
                   <p>
                       <IonIcon icon={timeOutline} />
@@ -201,8 +237,9 @@ const Maps = () => {
                             maxWidth: '100%',
                             height: 'auto',
                         }}
-                        onClick={() => kakaoShare(`${item.idx}`, `${item.name}`)}
+                        onClick={() => openCapacitorSite(`${item.name}`)}
                     />
+                    {/*
                     <Image src="/img/kakao_map.png"
                         alt="카카오 지도 열기"
                         width={24}
@@ -212,6 +249,7 @@ const Maps = () => {
                             height: 'auto',
                         }}
                     />
+                     */}
                 </div>             
                 </IonLabel>                
               </IonItem>
